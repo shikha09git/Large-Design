@@ -21,6 +21,7 @@ interface TransactionListProps {
   transactions: Transaction[];
   businesses: Business[];
   onDeleteTransaction: (id: string) => void;
+  onEditTransaction: (transaction: Transaction) => void;
 }
 
 const colorClasses: Record<string, { badge: string; dot: string }> = {
@@ -58,15 +59,16 @@ const colorClasses: Record<string, { badge: string; dot: string }> = {
   }
 };
 
-export function TransactionList({ transactions, businesses, onDeleteTransaction }: TransactionListProps) {
+export function TransactionList({ transactions, businesses, onDeleteTransaction, onEditTransaction }: TransactionListProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState<'all' | 'income' | 'expense'>('all');
   const [filterCategory, setFilterCategory] = useState<string>('all');
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('en-IN', {
       style: 'currency',
-      currency: 'USD'
+      currency: 'INR',
+      maximumFractionDigits: 2
     }).format(amount);
   };
 
@@ -189,6 +191,14 @@ export function TransactionList({ transactions, businesses, onDeleteTransaction 
                       className="text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 opacity-0 group-hover:opacity-100 transition-opacity"
                     >
                       <Trash2 className="w-4 h-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => onEditTransaction(transaction)}
+                      className="text-gray-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      ✏️
                     </Button>
                   </div>
                 </div>

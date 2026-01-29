@@ -78,9 +78,10 @@ const colorClasses: Record<string, { bg: string; border: string; text: string; g
 
 export function BusinessOverview({ transactions, businesses }: BusinessOverviewProps) {
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('en-IN', {
       style: 'currency',
-      currency: 'USD'
+      currency: 'INR',
+      maximumFractionDigits: 2
     }).format(amount);
   };
 
@@ -122,7 +123,7 @@ export function BusinessOverview({ transactions, businesses }: BusinessOverviewP
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {businessStats.map(({ business, income, expenses, balance, transactionCount }) => {
-              const colors = colorClasses[business.color];
+              const colors = colorClasses[business.color] || colorClasses.blue;
               return (
                 <div 
                   key={business.id} 
