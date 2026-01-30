@@ -1,7 +1,6 @@
 
   # Large Design
 
-  This is a code bundle for Large Design. The original project is available at https://www.figma.com/design/vMLdiXNEJAICVSOUBZ6gym/Large-Design.
 
   ## Running the code
 
