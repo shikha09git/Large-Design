@@ -7,6 +7,11 @@ import { ThemeToggle } from './components/ThemeToggle';
 import { Sparkles } from 'lucide-react';
 
 import type { Business } from './components/BusinessSelector';
+
+import { BalanceCard } from './components/BalanceCard';
+import { TransactionForm } from './components/TransactionForm';
+import { TransactionList } from './components/TransactionList';
+
 interface Transaction {
   id: string;
   date: string;
@@ -16,10 +21,6 @@ interface Transaction {
   amount: number;
   businessId: string;
 }
-
-import { BalanceCard } from './components/BalanceCard';
-import { TransactionForm } from './components/TransactionForm';
-import { TransactionList } from './components/TransactionList';
 
 function App() {
   // ================= AUTH STATE =================
@@ -44,10 +45,14 @@ function App() {
     const getSession = async () => {
       const { data } = await supabase.auth.getSession();
       if (data?.session?.user) setUser(data.session.user);
+
       const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
         setUser(session?.user ?? null);
       });
-      return () => { listener?.subscription?.unsubscribe?.(); };
+
+      return () => {
+        listener?.subscription?.unsubscribe?.();
+      };
     };
     getSession();
   }, []);
@@ -253,90 +258,158 @@ function App() {
   // ============================ LOGIN UI ===============================
   // =====================================================================
   if (!user) {
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-[#05080f] via-[#0b1220] to-[#0f1730] p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
-
-        {/* Header — EXACT dashboard style */}
-        <div className="rounded-2xl border border-white/10 bg-gradient-to-br from-[#111b3a]/80 via-[#0b1220]/80 to-[#0f1730]/80 backdrop-blur-xl shadow-[0_20px_60px_rgba(0,0,0,0.6)] p-5 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-blue-500/15 flex items-center justify-center text-blue-400 text-lg">
+    return (
+      <div
+        style={{
+          minHeight: '100vh',
+          width: '100vw',
+          display: 'grid',
+          placeItems: 'center',
+          background:
+            'radial-gradient(1200px 600px at 10% 10%, #0f1730 0%, #05080f 40%, #02040a 100%)',
+        }}
+      >
+        <div
+          style={{
+            width: '100%',
+            maxWidth: '420px',
+            padding: '32px',
+            borderRadius: '20px',
+            background:
+              'linear-gradient(145deg, rgba(17,27,58,0.85), rgba(11,18,32,0.85))',
+            backdropFilter: 'blur(16px)',
+            border: '1px solid rgba(255,255,255,0.08)',
+            boxShadow: '0 40px 120px rgba(0,0,0,0.8)',
+          }}
+        >
+          {/* Brand */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
+            <div
+              style={{
+                height: 44,
+                width: 44,
+                borderRadius: 12,
+                background: 'rgba(59,130,246,0.15)',
+                display: 'grid',
+                placeItems: 'center',
+                color: '#60a5fa',
+                fontSize: 18,
+              }}
+            >
               ✨
             </div>
             <div>
-              <h1 className="text-xl font-bold text-blue-400">Multi Book</h1>
-              <p className="text-slate-400 text-xs">
+              <h1 style={{ fontSize: 18, fontWeight: 700, color: '#60a5fa', margin: 0 }}>
+                Multi Book
+              </h1>
+              <p style={{ fontSize: 12, color: '#94a3b8', margin: 0 }}>
                 Track expenses across all your businesses
               </p>
             </div>
           </div>
-          <ThemeToggle />
-        </div>
 
-        {/* Main Auth Panel — looks like dashboard card */}
-        <div className="rounded-2xl border border-white/10 bg-gradient-to-br from-[#111b3a]/70 via-[#0b1220]/70 to-[#0f1730]/70 backdrop-blur-xl shadow-[0_30px_90px_rgba(0,0,0,0.7)] p-8 max-w-xl mx-auto">
-
-          <div className="mb-6">
-            <h2 className="text-2xl font-semibold text-white mb-1">
+          {/* Heading */}
+          <div style={{ marginBottom: 20 }}>
+            <h2 style={{ fontSize: 22, fontWeight: 600, color: 'white', marginBottom: 4 }}>
               {isSignUp ? 'Create your account' : 'Welcome back'}
             </h2>
-            <p className="text-slate-400 text-sm">
+            <p style={{ fontSize: 14, color: '#94a3b8', margin: 0 }}>
               {isSignUp
                 ? 'Start tracking your businesses in minutes.'
                 : 'Sign in to continue to Multi Book.'}
             </p>
           </div>
 
-          {/* Google Button */}
+          {/* Google */}
           <button
             onClick={handleGoogleLogin}
             disabled={authLoading}
-            className="w-full mb-5 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 text-white font-semibold py-3 transition-all duration-200 shadow-[0_8px_20px_rgba(0,0,0,0.45)]"
+            style={{
+              width: '100%',
+              height: 46,
+              borderRadius: 10,
+              border: '1px solid rgba(255,255,255,0.08)',
+              background: 'rgba(255,255,255,0.05)',
+              color: 'white',
+              fontWeight: 600,
+              cursor: 'pointer',
+              marginBottom: 16,
+            }}
           >
             Continue with Google
           </button>
 
-          <div className="flex items-center gap-3 my-4">
-            <div className="flex-1 h-px bg-white/10" />
-            <span className="text-xs text-slate-400">OR</span>
-            <div className="flex-1 h-px bg-white/10" />
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '16px 0' }}>
+            <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.08)' }} />
+            <span style={{ fontSize: 12, color: '#94a3b8' }}>OR</span>
+            <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.08)' }} />
           </div>
 
-          <form onSubmit={handleAuth} className="space-y-4">
+          <form onSubmit={handleAuth} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
             <div>
-              <label className="text-xs text-slate-400">Email</label>
+              <label style={{ fontSize: 12, color: '#94a3b8' }}>Email</label>
               <input
                 type="email"
                 value={authId}
                 onChange={(e) => setAuthId(e.target.value)}
                 placeholder="you@example.com"
                 required
-                className="mt-1 w-full rounded-lg border border-white/10 bg-white/5 text-white placeholder:text-slate-500 px-4 py-2.5 outline-none focus:ring-2 focus:ring-blue-500/50"
+                style={{
+                  marginTop: 6,
+                  width: '100%',
+                  height: 42,
+                  borderRadius: 8,
+                  border: '1px solid rgba(255,255,255,0.08)',
+                  background: 'rgba(255,255,255,0.05)',
+                  color: 'white',
+                  padding: '0 12px',
+                  outline: 'none',
+                }}
               />
             </div>
 
             <div>
-              <label className="text-xs text-slate-400">Password</label>
+              <label style={{ fontSize: 12, color: '#94a3b8' }}>Password</label>
               <input
                 type="password"
                 value={authPassword}
                 onChange={(e) => setAuthPassword(e.target.value)}
                 placeholder="••••••••"
                 required
-                className="mt-1 w-full rounded-lg border border-white/10 bg-white/5 text-white placeholder:text-slate-500 px-4 py-2.5 outline-none focus:ring-2 focus:ring-blue-500/50"
+                style={{
+                  marginTop: 6,
+                  width: '100%',
+                  height: 42,
+                  borderRadius: 8,
+                  border: '1px solid rgba(255,255,255,0.08)',
+                  background: 'rgba(255,255,255,0.05)',
+                  color: 'white',
+                  padding: '0 12px',
+                  outline: 'none',
+                }}
               />
             </div>
 
             {isSignUp && (
               <div>
-                <label className="text-xs text-slate-400">Confirm Password</label>
+                <label style={{ fontSize: 12, color: '#94a3b8' }}>Confirm Password</label>
                 <input
                   type="password"
                   value={authConfirmPassword}
                   onChange={(e) => setAuthConfirmPassword(e.target.value)}
                   placeholder="••••••••"
                   required
-                  className="mt-1 w-full rounded-lg border border-white/10 bg-white/5 text-white placeholder:text-slate-500 px-4 py-2.5 outline-none focus:ring-2 focus:ring-blue-500/50"
+                  style={{
+                    marginTop: 6,
+                    width: '100%',
+                    height: 42,
+                    borderRadius: 8,
+                    border: '1px solid rgba(255,255,255,0.08)',
+                    background: 'rgba(255,255,255,0.05)',
+                    color: 'white',
+                    padding: '0 12px',
+                    outline: 'none',
+                  }}
                 />
               </div>
             )}
@@ -344,38 +417,49 @@ function App() {
             <button
               type="submit"
               disabled={authLoading}
-              className="w-full rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold py-3 transition-all duration-200 shadow-[0_10px_28px_rgba(59,130,246,0.45)] hover:from-blue-500 hover:to-indigo-500 active:scale-[0.98]"
+              style={{
+                marginTop: 6,
+                width: '100%',
+                height: 46,
+                borderRadius: 10,
+                border: 'none',
+                background: 'linear-gradient(135deg, #2563eb, #4f46e5)',
+                color: 'white',
+                fontWeight: 700,
+                cursor: 'pointer',
+              }}
             >
-              {authLoading
-                ? 'Please wait...'
-                : isSignUp
-                ? 'Create account'
-                : 'Sign in'}
+              {authLoading ? 'Please wait...' : isSignUp ? 'Create account' : 'Sign in'}
             </button>
           </form>
 
-          <div className="mt-5 text-sm text-center text-slate-400">
+          <div style={{ marginTop: 16, fontSize: 14, textAlign: 'center', color: '#94a3b8' }}>
             {isSignUp ? 'Already have an account?' : "Don't have an account?"}{' '}
             <button
               type="button"
               onClick={() => setIsSignUp((p) => !p)}
-              className="text-blue-400 font-semibold hover:underline"
+              style={{
+                background: 'none',
+                border: 'none',
+                color: '#60a5fa',
+                fontWeight: 600,
+                cursor: 'pointer',
+                padding: 0,
+              }}
             >
               {isSignUp ? 'Sign in' : 'Create one'}
             </button>
           </div>
 
           {authError && (
-            <div className="mt-4 text-red-400 text-sm text-center">
+            <div style={{ marginTop: 14, color: '#f87171', fontSize: 14, textAlign: 'center' }}>
               {authError}
             </div>
           )}
         </div>
       </div>
-    </div>
-  );
-}
-
+    );
+  }
 
   // =====================================================================
   // ============================ MAIN APP ================================
