@@ -32,6 +32,19 @@ function App() {
   const [isSignUp, setIsSignUp] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
 
+  // ================= THEME SYNC FIX =================
+  const [theme, setTheme] = useState<'light' | 'dark'>(
+    (localStorage.getItem('theme') as 'light' | 'dark') || 'dark'
+  );
+
+  useEffect(() => {
+    const root = document.documentElement;
+    if (theme === 'dark') root.classList.add('dark');
+    else root.classList.remove('dark');
+    localStorage.setItem('theme', theme);
+  }, [theme]);
+  // =================================================
+
   const handleGoogleLogin = async () => {
     try {
       const { error } = await supabase.auth.signInWithOAuth({ provider: 'google' });
@@ -266,7 +279,9 @@ function App() {
           display: 'grid',
           placeItems: 'center',
           background:
-            'radial-gradient(1200px 600px at 10% 10%, #0f1730 0%, #05080f 40%, #02040a 100%)',
+            theme === 'dark'
+              ? 'radial-gradient(1200px 600px at 10% 10%, #0f1730 0%, #05080f 40%, #02040a 100%)'
+              : 'radial-gradient(1200px 600px at 10% 10%, #eef2ff 0%, #f8fafc 50%, #ffffff 100%)',
         }}
       >
         <div
@@ -276,12 +291,29 @@ function App() {
             padding: '32px',
             borderRadius: '20px',
             background:
-              'linear-gradient(145deg, rgba(17,27,58,0.85), rgba(11,18,32,0.85))',
+              theme === 'dark'
+                ? 'linear-gradient(145deg, rgba(17,27,58,0.85), rgba(11,18,32,0.85))'
+                : 'linear-gradient(145deg, rgba(255,255,255,0.9), rgba(245,247,255,0.9))',
             backdropFilter: 'blur(16px)',
-            border: '1px solid rgba(255,255,255,0.08)',
-            boxShadow: '0 40px 120px rgba(0,0,0,0.8)',
+            border:
+              theme === 'dark'
+                ? '1px solid rgba(255,255,255,0.08)'
+                : '1px solid rgba(0,0,0,0.08)',
+            boxShadow:
+              theme === 'dark'
+                ? '0 40px 120px rgba(0,0,0,0.8)'
+                : '0 40px 120px rgba(0,0,0,0.15)',
+            position: 'relative',
           }}
         >
+          {/* Theme Toggle */}
+          <div
+            style={{ position: 'absolute', top: 16, right: 16 }}
+            onClick={() => setTheme((p) => (p === 'dark' ? 'light' : 'dark'))}
+          >
+            <ThemeToggle />
+          </div>
+
           {/* Brand */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
             <div
@@ -289,20 +321,26 @@ function App() {
                 height: 44,
                 width: 44,
                 borderRadius: 12,
-                background: 'rgba(59,130,246,0.15)',
+                background: theme === 'dark' ? 'rgba(59,130,246,0.15)' : 'rgba(37,99,235,0.1)',
                 display: 'grid',
                 placeItems: 'center',
-                color: '#60a5fa',
+                color: '#2563eb',
                 fontSize: 18,
               }}
             >
               ✨
             </div>
             <div>
-              <h1 style={{ fontSize: 18, fontWeight: 700, color: '#60a5fa', margin: 0 }}>
+              <h1 style={{ fontSize: 18, fontWeight: 700, color: '#2563eb', margin: 0 }}>
                 Multi Book
               </h1>
-              <p style={{ fontSize: 12, color: '#94a3b8', margin: 0 }}>
+              <p
+                style={{
+                  fontSize: 12,
+                  color: theme === 'dark' ? '#94a3b8' : '#475569',
+                  margin: 0,
+                }}
+              >
                 Track expenses across all your businesses
               </p>
             </div>
@@ -310,10 +348,23 @@ function App() {
 
           {/* Heading */}
           <div style={{ marginBottom: 20 }}>
-            <h2 style={{ fontSize: 22, fontWeight: 600, color: 'white', marginBottom: 4 }}>
+            <h2
+              style={{
+                fontSize: 22,
+                fontWeight: 600,
+                color: theme === 'dark' ? 'white' : '#0f172a',
+                marginBottom: 4,
+              }}
+            >
               {isSignUp ? 'Create your account' : 'Welcome back'}
             </h2>
-            <p style={{ fontSize: 14, color: '#94a3b8', margin: 0 }}>
+            <p
+              style={{
+                fontSize: 14,
+                color: theme === 'dark' ? '#94a3b8' : '#475569',
+                margin: 0,
+              }}
+            >
               {isSignUp
                 ? 'Start tracking your businesses in minutes.'
                 : 'Sign in to continue to Multi Book.'}
@@ -328,9 +379,12 @@ function App() {
               width: '100%',
               height: 46,
               borderRadius: 10,
-              border: '1px solid rgba(255,255,255,0.08)',
-              background: 'rgba(255,255,255,0.05)',
-              color: 'white',
+              border:
+                theme === 'dark'
+                  ? '1px solid rgba(255,255,255,0.08)'
+                  : '1px solid rgba(0,0,0,0.1)',
+              background: theme === 'dark' ? 'rgba(255,255,255,0.05)' : '#f8fafc',
+              color: theme === 'dark' ? 'white' : '#0f172a',
               fontWeight: 600,
               cursor: 'pointer',
               marginBottom: 16,
@@ -340,14 +394,30 @@ function App() {
           </button>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '16px 0' }}>
-            <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.08)' }} />
-            <span style={{ fontSize: 12, color: '#94a3b8' }}>OR</span>
-            <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.08)' }} />
+            <div
+              style={{
+                flex: 1,
+                height: 1,
+                background: theme === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.1)',
+              }}
+            />
+            <span style={{ fontSize: 12, color: theme === 'dark' ? '#94a3b8' : '#475569' }}>
+              OR
+            </span>
+            <div
+              style={{
+                flex: 1,
+                height: 1,
+                background: theme === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.1)',
+              }}
+            />
           </div>
 
           <form onSubmit={handleAuth} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
             <div>
-              <label style={{ fontSize: 12, color: '#94a3b8' }}>Email</label>
+              <label style={{ fontSize: 12, color: theme === 'dark' ? '#94a3b8' : '#475569' }}>
+                Email
+              </label>
               <input
                 type="email"
                 value={authId}
@@ -359,9 +429,12 @@ function App() {
                   width: '100%',
                   height: 42,
                   borderRadius: 8,
-                  border: '1px solid rgba(255,255,255,0.08)',
-                  background: 'rgba(255,255,255,0.05)',
-                  color: 'white',
+                  border:
+                    theme === 'dark'
+                      ? '1px solid rgba(255,255,255,0.08)'
+                      : '1px solid rgba(0,0,0,0.1)',
+                  background: theme === 'dark' ? 'rgba(255,255,255,0.05)' : '#ffffff',
+                  color: theme === 'dark' ? 'white' : '#0f172a',
                   padding: '0 12px',
                   outline: 'none',
                 }}
@@ -369,7 +442,9 @@ function App() {
             </div>
 
             <div>
-              <label style={{ fontSize: 12, color: '#94a3b8' }}>Password</label>
+              <label style={{ fontSize: 12, color: theme === 'dark' ? '#94a3b8' : '#475569' }}>
+                Password
+              </label>
               <input
                 type="password"
                 value={authPassword}
@@ -381,9 +456,12 @@ function App() {
                   width: '100%',
                   height: 42,
                   borderRadius: 8,
-                  border: '1px solid rgba(255,255,255,0.08)',
-                  background: 'rgba(255,255,255,0.05)',
-                  color: 'white',
+                  border:
+                    theme === 'dark'
+                      ? '1px solid rgba(255,255,255,0.08)'
+                      : '1px solid rgba(0,0,0,0.1)',
+                  background: theme === 'dark' ? 'rgba(255,255,255,0.05)' : '#ffffff',
+                  color: theme === 'dark' ? 'white' : '#0f172a',
                   padding: '0 12px',
                   outline: 'none',
                 }}
@@ -392,7 +470,9 @@ function App() {
 
             {isSignUp && (
               <div>
-                <label style={{ fontSize: 12, color: '#94a3b8' }}>Confirm Password</label>
+                <label style={{ fontSize: 12, color: theme === 'dark' ? '#94a3b8' : '#475569' }}>
+                  Confirm Password
+                </label>
                 <input
                   type="password"
                   value={authConfirmPassword}
@@ -404,9 +484,12 @@ function App() {
                     width: '100%',
                     height: 42,
                     borderRadius: 8,
-                    border: '1px solid rgba(255,255,255,0.08)',
-                    background: 'rgba(255,255,255,0.05)',
-                    color: 'white',
+                    border:
+                      theme === 'dark'
+                        ? '1px solid rgba(255,255,255,0.08)'
+                        : '1px solid rgba(0,0,0,0.1)',
+                    background: theme === 'dark' ? 'rgba(255,255,255,0.05)' : '#ffffff',
+                    color: theme === 'dark' ? 'white' : '#0f172a',
                     padding: '0 12px',
                     outline: 'none',
                   }}
@@ -433,7 +516,7 @@ function App() {
             </button>
           </form>
 
-          <div style={{ marginTop: 16, fontSize: 14, textAlign: 'center', color: '#94a3b8' }}>
+          <div style={{ marginTop: 16, fontSize: 14, textAlign: 'center', color: theme === 'dark' ? '#94a3b8' : '#475569' }}>
             {isSignUp ? 'Already have an account?' : "Don't have an account?"}{' '}
             <button
               type="button"
@@ -441,7 +524,7 @@ function App() {
               style={{
                 background: 'none',
                 border: 'none',
-                color: '#60a5fa',
+                color: '#2563eb',
                 fontWeight: 600,
                 cursor: 'pointer',
                 padding: 0,
@@ -500,7 +583,7 @@ function App() {
                 <ThemeToggle />
                 <button
                   onClick={handleLogout}
-                  className="border-input data-[placeholder]:text-muted-foreground [&_svg]:not([class*='text-']) w-[200px] h-[36px] px-[12px] py-[8px] rounded-md border bg-[oklab:0.269_0_0/.3] text-white font-semibold flex items-center justify-center transition-colors"
+                  className="w-[200px] h-[36px] px-[12px] py-[8px] rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white font-semibold flex items-center justify-center transition-colors hover:bg-gray-100 dark:hover:bg-gray-600"
                   role="combobox"
                   tabIndex={0}
                 >
